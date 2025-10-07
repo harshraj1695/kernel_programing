@@ -1,0 +1,54 @@
+# ===== Kernel Build Artifacts =====
+*.o
+*.ko
+*.mod.*
+*.symvers
+*.order
+*.cmd
+Module.markers
+modules.order
+modules.builtin
+modules.builtin.modinfo
+
+# ===== Kernel Logs and Outputs =====
+*.log
+*.dmesg
+core
+*.lst
+*.map
+
+# ===== Temporary and Backup Files =====
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# ===== Object & Binary Files =====
+*.a
+*.so
+*.out
+*.elf
+*.bin
+
+# ===== IDE / Editor Files =====
+.vscode/
+.idea/
+*.user
+*.workspace
+*.project
+
+# ===== Miscellaneous =====
+tags
+cscope.*
+*.tar
+*.gz
+*.bz2
+*.xz
+*.zip
+
+# ===== Keep Makefiles =====
+!Makefile
+!makefile
+
