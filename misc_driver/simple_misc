@@ -1,0 +1,109 @@
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/miscdevice.h>
+#include <linux/fs.h>
+#include <linux/uaccess.h>
+
+#define DEVICE_NAME "mydevice"
+#define BUF_SIZE 128
+
+static char kernel_buffer[BUF_SIZE];
+static size_t data_size = 0;
+
+
+static ssize_t my_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+{
+    ssize_t bytes_to_read;
+
+    /* If offset beyond available data, nothing left to read */
+    if (*ppos >= data_size)
+        return 0;
+
+    /* Don't read past data_size */
+    bytes_to_read = min(count, data_size - *ppos);
+
+    if (copy_to_user(buf, kernel_buffer + *ppos, bytes_to_read)) {
+        pr_err("copy_to_user failed\n");
+        return -EFAULT;
+    }
+
+    *ppos += bytes_to_read;  // move the file pointer
+    pr_info("mydevice: read %zu bytes\n", bytes_to_read);
+    return bytes_to_read;
+}
+
+
+static ssize_t my_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+    ssize_t bytes_to_write;
+
+    /* Limit write size */
+    bytes_to_write = min(count, (size_t)(BUF_SIZE - 1));
+
+    if (copy_from_user(kernel_buffer, buf, bytes_to_write)) {
+        pr_err("copy_from_user failed\n");
+        return -EFAULT;
+    }
+
+    kernel_buffer[bytes_to_write] = '\0';
+    data_size = bytes_to_write;
+
+    pr_info("mydevice: received %zu bytes: '%s'\n", bytes_to_write, kernel_buffer);
+    return bytes_to_write;
+}
+
+
+static int my_open(struct inode *inode, struct file *file)
+{
+    pr_info("mydevice: opened\n");
+    return 0;
+}
+
+static int my_release(struct inode *inode, struct file *file)
+{
+    pr_info("mydevice: closed\n");
+    return 0;
+}
+
+
+static const struct file_operations my_fops = {
+    .owner   = THIS_MODULE,
+    .read    = my_read,
+    .write   = my_write,
+    .open    = my_open,
+    .release = my_release,
+};
+
+
+static struct miscdevice my_misc_device = {
+    .minor = MISC_DYNAMIC_MINOR,
+    .name  = DEVICE_NAME,
+    .fops  = &my_fops,
+    .mode  = 0666,
+};
+
+
+static int __init my_init(void)
+{
+    int ret = misc_register(&my_misc_device);
+    if (ret)
+        pr_err("Failed to register misc device\n");
+    else
+        pr_info("/dev/%s created successfully\n", DEVICE_NAME);
+
+    return ret;
+}
+
+static void __exit my_exit(void)
+{
+    misc_deregister(&my_misc_device);
+    pr_info("/dev/%s removed\n", DEVICE_NAME);
+}
+
+module_init(my_init);
+module_exit(my_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Harsh Raj");
+MODULE_DESCRIPTION("Simple misc driver with copy_to_user and copy_from_user");
+
