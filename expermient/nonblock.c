@@ -3,8 +3,8 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
-#include <linux/device.h>   // for class_create / device_create
-#include <linux/fcntl.h>    // for O_NONBLOCK
+#include <linux/device.h>   
+#include <linux/fcntl.h>    
 
 #define DEVICE_NAME "always_nb"
 #define BUF_SIZE 128
@@ -74,7 +74,7 @@ static struct file_operations fops = {
     .release = my_release,
 };
 
-/* ------------ INIT ------------ */
+
 static int __init nb_init(void)
 {
     major = register_chrdev(0, DEVICE_NAME, &fops);
@@ -83,14 +83,13 @@ static int __init nb_init(void)
 
     pr_info("%s: loaded with major %d\n", DEVICE_NAME, major);
 
-    /* Create class */
     nb_class = class_create(DEVICE_NAME);
     if (IS_ERR(nb_class)) {
         unregister_chrdev(major, DEVICE_NAME);
         return PTR_ERR(nb_class);
     }
 
-    /* Create device node in /dev automatically */
+
     nb_device = device_create(nb_class, NULL, MKDEV(major, 0), NULL, DEVICE_NAME);
     if (IS_ERR(nb_device)) {
         class_destroy(nb_class);
@@ -102,7 +101,7 @@ static int __init nb_init(void)
     return 0;
 }
 
-/* ------------ EXIT ------------ */
+
 static void __exit nb_exit(void)
 {
     device_destroy(nb_class, MKDEV(major, 0));
