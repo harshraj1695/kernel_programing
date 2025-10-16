@@ -98,7 +98,7 @@ static int __init blk_init(void)
     pr_info("%s: loaded with major %d\n", DEVICE_NAME, major);
 
 
-    blk_class = class_create(THIS_MODULE, DEVICE_NAME);
+    blk_class = class_create(DEVICE_NAME);
     if (IS_ERR(blk_class)) {
         unregister_chrdev(major, DEVICE_NAME);
         return PTR_ERR(blk_class);
