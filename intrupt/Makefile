@@ -1,4 +1,4 @@
-obj-m += sampleintrupt.o
+obj-m += passing_dataqueue.o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD  := $(shell pwd)
