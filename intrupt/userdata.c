@@ -28,7 +28,6 @@ static void work_handler(struct work_struct *work)
 
     pr_info("Workqueue: received input=%d\n", data->input);
 
-
     *(data->result_ptr) = data->input * 2;
 
     pr_info("Workqueue: processed result=%d\n", *(data->result_ptr));
@@ -46,7 +45,6 @@ static long my_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             return -EFAULT;
 
         pr_info("IOCTL: Got value %d from user\n", user_val);
-
 
         struct my_work_data *data = kmalloc(sizeof(*data), GFP_KERNEL);
         if (!data)

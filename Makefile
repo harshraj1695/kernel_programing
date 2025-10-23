@@ -1,5 +1,8 @@
 obj-m += sample.o
 
+# Add debug flag
+EXTRA_CFLAGS += -g
+
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
