@@ -1,4 +1,4 @@
-obj-m += sample.o
+obj-m += container.o
 
 # Add debug flag
 EXTRA_CFLAGS += -g
