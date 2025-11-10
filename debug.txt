@@ -1,0 +1,5 @@
+cd ~/linux-6.10.9
+qemu-system-x86_64 -kernel arch/x86/boot/bzImage \
+  -initrd ~/initramfs.cpio.gz \
+  -append "console=ttyS0" -nographic
+
