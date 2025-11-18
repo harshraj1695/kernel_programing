@@ -17,6 +17,7 @@ static struct cdev my_cdev;
 struct my_data {
     char buf[BUF_SIZE];
     int len;
+    
 };
 
 /* ONE instance per node */
