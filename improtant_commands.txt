@@ -1,0 +1,62 @@
+STEP 1:
+/*
+ *removes all the temporary folder, object files, images generated during the previous build. 
+ *This step also deletes the .config file if created previously 
+ */
+make ARCH=arm distclean
+
+STEP 2:
+/*creates a .config file by using default config file given by the vendor */
+
+make ARCH=arm bb.org_defconfig
+
+
+STEP 3:
+/*This step is optional. Run this command only if you want to change some kernel settings before compilation */ ​
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
+
+
+STEP 4:
+/*Kernel source code compilation. This stage creates a kernel image "uImage" also all the device tree source files will be compiled, and dtbs will be generated */ ​
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- uImage dtbs LOADADDR=0x88000000 -j4
+
+
+STEP 5:
+/*This step builds and generates in-tree loadable(M) kernel modules(.ko) */
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-  modules  -j4
+
+STEP 6:
+/* This step installs all the generated .ko files in the default path of the computer (/lib/modules/<kernel_ver>) */​
+
+sudo make ARCH=arm  modules_install
+
+
+
+// UBOOT commands
+mmc dev 0
+setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 rootfstype=ext4 rw
+fatload mmc 0:1 0x82000000 uImage
+fatload mmc 0:1 0x83000000 am335x-boneblack.dtb
+bootm 0x82000000 - 0x83000000
+
+
+mmc dev 0
+setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 rootfstype=ext4 rw
+fatload mmc 0:1 0x82000000 uImage
+fatload mmc 0:1 0x88000000 am335x-boneblack.dtb
+bootm 0x82000000 - 0x88000000                      
+
+
+
+// check for kgdb flag enabled or not
+zcat /proc/config.gz | grep KGDB
+
+
+// for listing system call in kernel header file
+ln=$(grep -n "CONFIG_ARCH_HAS_SYSCALL_WRAPPER" include/linux/syscalls.h | cut -d: -f1 | head -n1)
+# ln = start of the wrapper block
+end=$(grep -n "CONFIG_ARCH_HAS_SYSCALL_WRAPPER" -n include/linux/syscalls.h | grep endif | awk -F: '{print $1}' | head -n1)
+

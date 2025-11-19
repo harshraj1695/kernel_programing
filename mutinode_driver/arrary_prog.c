@@ -13,7 +13,7 @@ static dev_t dev_num;
 static struct class *cls;
 static struct cdev my_cdev;
 
-
+// buffer stuct 
 struct my_data {
     char buf[BUF_SIZE];
     int len;
