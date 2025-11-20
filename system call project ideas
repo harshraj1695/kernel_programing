@@ -1,0 +1,233 @@
+Below are **several system-call project ideas that are truly NEW**, i.e., **Linux does not already have them**, and **no existing command provides the same functionality**.
+These are realistic, kernel-level projects that will teach you system-call design, file-system internals, memory management, process tables, and locks.
+
+---
+
+# ✅ **UNIQUELY USEFUL SYSTEM CALL IDEAS (NOT AVAILABLE IN LINUX)**
+
+I am giving you **8 strong ideas**.
+Pick any one and I will give you full code + syscall table entries + user program.
+
+---
+
+# **1. System Call: Detect Deleted-but-Still-Open Files**
+
+### Problem
+
+If a file is open by a process and another process deletes it, the file still exists on disk (via inode) until last FD is closed. You cannot know this easily.
+
+### New syscall:
+
+```
+int sys_list_unlinked_open_files(struct unlinked_file_info __user *buf, int max);
+```
+
+### What it returns:
+
+* PID
+* File path (original path)
+* Inode number
+* File size
+* FD number
+* Process name
+
+**No existing command gives this completely.**
+`lsof` gives partial info but cannot be used inside kernel programs or embedded systems.
+
+---
+
+# **2. System Call: Per-Process Memory Fragmentation Report**
+
+There is **no command** to show real fragmentation of a process's heap (malloc regions).
+Only kernel knows it via `vm_area_struct`.
+
+### Syscall:
+
+```
+int sys_get_fragmentation(pid_t pid, struct frag_info __user *info);
+```
+
+Returns:
+
+* Count of VMAs
+* Number of small gaps
+* Average gap size
+* Total unmapped but unusable memory
+* Largest hole
+* Heap fragmentation score
+
+This would be a **super original** project.
+
+---
+
+# **3. System Call: Kernel Scheduler Latency Measurement**
+
+Measure the **actual delay** between:
+
+* Time the process becomes runnable
+* Time scheduler actually runs it
+
+Linux has no direct syscall for this.
+
+### Syscall:
+
+```
+long sys_get_sched_latency(pid_t pid, struct latency_info __user *info);
+```
+
+Returns:
+
+* Minimum latency
+* Maximum latency
+* Average latency
+* Count of scheduling events
+
+---
+
+# **4. System Call: Per-Process Lock Debugger**
+
+Track how many kernel locks (mutex, rwsem, spinlocks) a process is waiting for.
+
+Linux has **no userspace-accessible interface** for this.
+
+### Syscall:
+
+```
+long sys_get_lock_waits(pid_t pid, struct lock_info *buf, int max);
+```
+
+Shows:
+
+* Number of locks it waited on
+* Maximum wait time
+* Which lock classes
+* Deadlock risk
+
+---
+
+# **5. System Call: Page Cache Occupancy per File**
+
+Linux exposes page cache usage globally (`/proc/meminfo`), but **not per file**.
+
+### Syscall:
+
+```
+long sys_get_file_cache_info(const char *path, struct cache_info *info);
+```
+
+Returns:
+
+* How many pages of the file are in cache
+* Dirty page count
+* Reclaimable pages
+* Whether file is in active/inactive lists
+
+No userspace command exists for this.
+
+---
+
+# **6. System Call: Per-File Open Counter (Real-Time)**
+
+You said `lsof | wc -l` already gives counts.
+But that’s **slow**, cannot run in kernel modules, and gives combined info.
+
+This syscall is **unique**:
+
+```
+long sys_get_file_fd_count(const char *path);
+```
+
+Returns:
+
+* How many processes currently have this file open
+* List of PIDs
+* Last access timestamp
+* Who opened it first
+
+This is **not available** in any Linux command.
+
+---
+
+# **7. System Call: Detect File Descriptor Leaks**
+
+Track process FD usage historically.
+
+### Syscall:
+
+```
+long sys_get_fd_leaks(pid_t pid, struct leak_info *info);
+```
+
+Returns:
+
+* How many FDs the process opened total
+* How many it forgot to close
+* What paths they correspond to
+* Lifetime of leak
+
+Not available anywhere else.
+
+---
+
+# **8. System Call: Kernel-Level File Change Watcher Without inotify**
+
+`inotify` works only when file exists.
+But many embedded systems do not have it enabled.
+
+Create:
+
+### Syscall:
+
+```
+long sys_file_change_event(const char *path, struct event_info *info);
+```
+
+Kernel monitors:
+
+* Delete
+* Rename
+* Resize
+* Permission change
+* Owner change
+
+This works even if filesystem does NOT support inotify.
+
+---
+
+# ⭐ RECOMMENDATION FOR YOU (BASED ON YOUR PROJECT)
+
+The BEST project for your case is:
+
+# **➡ “Detect deleted-but-open files” syscall.**
+
+Because you ALREADY faced this bug!
+
+It is:
+
+* 100% unique
+* 100% kernel-level
+* Useful in BeagleBone / embedded work
+* Not available with any existing syscall
+* Easy enough to implement
+* Teaches you super important Linux FS internals (inode, dentry, file struct)
+
+---
+
+# If you want, I can now generate:
+
+### ✔ Full system call code
+
+### ✔ Kernel patch
+
+### ✔ Syscall table entries (ARMv7 for BeagleBone)
+
+### ✔ User-space test program
+
+### ✔ How to compile and test on BeagleBone
+
+---
+
+**Which system call do you choose?**
+1–8?
+If unsure, I will pick the best and start writing the code.
+

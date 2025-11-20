@@ -59,4 +59,5 @@ zcat /proc/config.gz | grep KGDB
 ln=$(grep -n "CONFIG_ARCH_HAS_SYSCALL_WRAPPER" include/linux/syscalls.h | cut -d: -f1 | head -n1)
 # ln = start of the wrapper block
 end=$(grep -n "CONFIG_ARCH_HAS_SYSCALL_WRAPPER" -n include/linux/syscalls.h | grep endif | awk -F: '{print $1}' | head -n1)
+sed -i "$((end+1))a asmlinkage long sys_add(int a, int b);" include/linux/syscalls.h
 
