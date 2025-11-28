@@ -1,4 +1,4 @@
-obj-m += register.o
+obj-m += simple2_pseduo.o
 
 # Add debug flag
 EXTRA_CFLAGS += -g
