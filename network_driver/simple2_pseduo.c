@@ -87,6 +87,12 @@ static int pseudo_open(struct net_device *dev)
 
     /* setup timer here (not in init) to avoid referencing uninitialized data */
     timer_setup(&priv->rx_timer, pseudo_rx_timer, 0);
+    /*
+    Step 3 — Start the timer
+    jiffies = current kernel ticks
+    HZ = 1 second
+    so call callback_func 1 second later
+    */
     mod_timer(&priv->rx_timer, jiffies + HZ);
 
     netif_start_queue(dev);
