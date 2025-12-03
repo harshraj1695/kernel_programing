@@ -35,7 +35,8 @@ sudo make ARCH=arm  modules_install
 
 
 
-// UBOOT commands
+// UBOOT commands we can put it in uENV.txt
+
 mmc dev 0
 setenv bootargs console=ttyO0,115200n8 root=/dev/mmcblk0p2 rootfstype=ext4 rw
 fatload mmc 0:1 0x82000000 uImage
@@ -72,3 +73,63 @@ sudo ip link set pnet0 up
 # view stats:
 ip -s link show pnet0
 
+
+
+
+
+
+Yes, you can typically **manually change** the Ethernet link speed and duplex settings on a Linux device like the BeagleBone Black.
+
+However, since the **BeagleBone Black**'s Ethernet port is hardware limited to a maximum of **100 Mbps (Fast Ethernet)**, you can only set it to:
+
+  * **10 Mbps** (Half or Full Duplex)
+  * **100 Mbps** (Half or Full Duplex)
+
+You cannot set it to 1000 Mbps (Gigabit Ethernet) because the physical chip (PHY) on the board doesn't support that speed.
+
+-----
+
+## 🛠️ How to Change the Speed (Using `ethtool`)
+
+The primary command-line utility used on Linux systems (like the Debian OS on the BeagleBone Black) to control network device settings is **`ethtool`**.
+
+### 1\. Check Current Settings
+
+First, check the current status of your Ethernet interface, which is usually named `eth0`:
+
+```bash
+ethtool eth0
+```
+
+  * Look for the `Speed` and `Duplex` fields to see what the hardware automatically negotiated (`Auto-negotiation`).
+
+### 2\. Manually Set the Speed
+
+You can use `ethtool` to force the speed and duplex. Forcing a speed disables auto-negotiation, so you must specify both speed and duplex.
+
+**Example: Forcing 10 Mbps Full Duplex**
+
+```bash
+sudo ethtool -s eth0 speed 10 duplex full autoneg off
+```
+
+| Parameter | Value | Description |
+| :--- | :--- | :--- |
+| `-s eth0` | | Specifies the interface to change (`s` is for set). |
+| `speed 10` | | Sets the speed to 10 Mbps. |
+| `duplex full` | | Sets the Duplex to Full (can send and receive at the same time). |
+| `autoneg off` | | Turns off automatic negotiation with the connected device. |
+
+**Example: Forcing 100 Mbps Half Duplex**
+
+```bash
+sudo ethtool -s eth0 speed 100 duplex half autoneg off
+```
+
+-----
+
+### ⚠️ Important Notes
+
+1.  **Non-Permanent:** Changes made with `ethtool` are usually **temporary** and will be lost when you reboot the BeagleBone Black.
+2.  **Making it Permanent:** To make the change permanent, you would need to add the `ethtool` command to a **startup script** (like an `/etc/rc.local` file or a system service file) that runs every time the system boots up.
+3.  **Duplex Matching:** If you manually set the speed and duplex, you **must** ensure the device on the *other end* of the cable (e.g., your router or PC) is set to the **exact same speed and duplex**. If they don't match, you will experience poor performance or the link may fail entirely (this is called a **duplex mismatch**).
