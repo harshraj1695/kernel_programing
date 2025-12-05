@@ -1,0 +1,54 @@
+✅ What You Should Learn From cpsw.c (In Correct Order)
+
+If your goal is to truly understand how an Ethernet driver works, follow this order:
+
+1️⃣ Driver registration
+
+platform_driver
+
+module_platform_driver()
+
+2️⃣ Probe path
+
+cpsw_probe()
+
+cpsw_probe_dt()
+
+3️⃣ net_device creation
+
+alloc_etherdev()
+
+register_netdev()
+
+4️⃣ net_device_ops
+
+.ndo_open
+
+.ndo_start_xmit
+
+.ndo_stop
+
+5️⃣ DMA flow
+
+TX ring
+
+RX ring
+
+Descriptor handling
+
+6️⃣ NAPI
+
+napi_schedule()
+
+poll()
+
+7️⃣ PHY handling
+
+phy_connect()
+
+MDIO
+
+Link up/down events
+
+This is the universal Linux Ethernet driver learning path.
+
