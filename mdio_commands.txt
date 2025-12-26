@@ -1,0 +1,64 @@
+1️⃣ U-Boot commands (MOST POWERFUL / RAW ACCESS)
+
+These give direct MDIO access to PHY registers.
+
+List MDIO buses and PHYs
+=> mdio list
+
+
+Expected:
+
+cpsw:
+0 - SMSC LAN8710/LAN8720 <--> cpsw
+
+Read standard PHY registers (Clause-22)
+
+Syntax
+
+mdio read <bus> <phy_addr> <reg>
+
+Basic Control Register (BCR – 0x00)
+=> mdio read cpsw 0 0
+
+
+Controls reset, AN enable, speed select.
+
+Basic Status Register (BSR – 0x01)
+=> mdio read cpsw 0 1
+=> mdio read cpsw 0 1    # read twice (latched low)
+
+
+Reports link status and AN completion.
+
+PHY ID registers
+=> mdio read cpsw 0 2    # PHY ID1
+=> mdio read cpsw 0 3    # PHY ID2
+
+Auto-Negotiation Advertisement (ANAR – 0x04)
+=> mdio read cpsw 0 4
+
+Link Partner Ability (LPAR – 0x05)
+=> mdio read cpsw 0 5
+
+Restart auto-negotiation
+=> mdio write cpsw 0 0 0x3200
+
+
+(AN enable + restart)
+
+Force 100 Mbps Full Duplex (disable AN)
+=> mdio write cpsw 0 0 0x2100
+
+Force 10 Mbps Half Duplex
+=> mdio write cpsw 0 0 0x0000
+
+Reset PHY
+=> mdio write cpsw 0 0 0x8000
+
+Read extended registers (if needed)
+=> mdio rx cpsw 0 <reg>
+
+
+
+For overall CPSW register_netdev
+md 0x4A100000 0x120
