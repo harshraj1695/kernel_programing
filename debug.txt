@@ -1,5 +1,9 @@
-cd ~/linux-6.10.9
-qemu-system-x86_64 -kernel arch/x86/boot/bzImage \
-  -initrd ~/initramfs.cpio.gz \
-  -append "console=ttyS0" -nographic
+Enable debug for your driver file
 
+Example for CPSW:
+
+echo 'file drivers/net/ethernet/ti/cpsw*.c +p' \
+  | sudo tee /sys/kernel/debug/dynamic_debug/control
+
+
+Now all dev_dbg() and pr_debug() in those files will print.
