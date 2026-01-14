@@ -1,0 +1,17 @@
+// this is in config file just add these lines
+# Enable UART
+enable_uart=1
+
+# Enable USB gadget mode
+dtoverlay=dwc2
+
+# Run in 64-bit mode
+arm_64bit=1
+
+# Disable HDMI drivers (optional but recommended for headless)
+disable_fw_kms_setup=1
+
+
+// This is shell file
+console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 fsck.repair=yes rootwait modules-load=dwc2,g_serial
+\
