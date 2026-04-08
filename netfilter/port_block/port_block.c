@@ -21,7 +21,7 @@ static unsigned int udp_block_hook(void *priv,
     if (!ip)
         return NF_ACCEPT;
 
-    /* Check if UDP */
+    // Block UDP packets
     if (ip->protocol == IPPROTO_TCP) {
         printk(KERN_INFO "Blocked UDP packet\n");
         return NF_DROP;
@@ -30,7 +30,6 @@ static unsigned int udp_block_hook(void *priv,
     return NF_ACCEPT;
 }
 
-/* Init */
 static int __init firewall_init(void)
 {
     nfho.hook = udp_block_hook;
