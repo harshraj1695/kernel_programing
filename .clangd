@@ -1,0 +1,16 @@
+CompileFlags:
+  Add:
+    - -I/usr/src/linux-headers-6.8.0-106-generic/include
+    - -I/usr/src/linux-headers-6.8.0-106-generic/include/generated
+    - -I/lib/modules/6.8.0-106-generic/build/include
+    - -I/lib/modules/6.8.0-106-generic/build/arch/x86/include
+    - -I/lib/modules/6.8.0-106-generic/build/arch/x86/include/generated
+    - -D__KERNEL__
+    - -DMODULE
+    - -D__x86_64__
+    - -D__ASM_X86__
+    - -DCONFIG_X86_64=1
+    - -D__KERNEL_SYSCALLS__
+    - -include
+    - /usr/src/linux-headers-6.8.0-106-generic/include/generated/autoconf.h
+    - -std=gnu11
