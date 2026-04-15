@@ -47,6 +47,7 @@ cscope.*
 *.bz2
 *.xz
 *.zip
+*.data
 
 # ===== Keep Makefiles =====
 !Makefile
