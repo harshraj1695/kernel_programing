@@ -1,0 +1,112 @@
+Here's a complete step-by-step guide to contribute to the official Linux kernel:
+
+Step 1: 📧 Setup Git Identity & Email
+bashgit config --global user.name "Your Full Name"
+git config --global user.email "your@email.com"
+
+Use the same email everywhere — git, patch, and kernel mailing list.
+
+
+Step 2: 📥 Clone the Right Tree
+Don't use Linus's tree directly. Use the staging tree for first patches:
+bashgit clone git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
+cd staging
+
+Step 3: 🔍 Find Something to Fix
+bash# Find real issues in rtl8188eu
+find drivers/staging/rtl8188eu/ -name "*.c" ! -name "*.mod.c" | \
+xargs ./scripts/checkpatch.pl -f 2>/dev/null | grep -E "WARNING|ERROR"
+Pick one single issue from one file for your first patch.
+
+Step 4: 🌿 Create a Branch
+bashgit checkout -b fix/rtl8188eu-codingstyle
+
+Step 5: ✏️ Make Your Fix
+Edit the file, fix the single issue, then verify:
+bash./scripts/checkpatch.pl -f drivers/staging/rtl8188eu/<file>.c
+Make sure the warning is gone.
+
+Step 6: ✅ Verify It Still Compiles
+bashmake M=drivers/staging/rtl8188eu/ -j$(nproc)
+Must compile with zero errors.
+
+Step 7: 📝 Commit with Proper Format
+bashgit add drivers/staging/rtl8188eu/<file>.c
+git commit -s
+Commit message must follow this exact format:
+staging: rtl8188eu: fix <what you fixed>
+
+<One or two lines explaining what was wrong and what you did.
+Reference checkpatch if relevant.>
+
+Signed-off-by: Your Name <your@email.com>
+Example:
+staging: rtl8188eu: fix line length in rtw_cmd.c
+
+Lines exceeded 80 characters, refactored function calls
+to comply with kernel coding style as reported by checkpatch.pl.
+
+Signed-off-by: Harsh Raj <harshraj1695@example.com>
+
+Step 8: 🔎 Find the Maintainer
+bashgit format-patch -1 HEAD
+./scripts/get_maintainer.pl 0001-staging-rtl8188eu-*.patch
+Output will look like:
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> (maintainer)
+devel@linuxdriverproject.org (mailing list)
+
+Step 9: 📤 Configure git send-email
+bashsudo apt install git-email
+Add to ~/.gitconfig:
+ini[sendemail]
+    smtpserver = smtp.gmail.com
+    smtpserverport = 587
+    smtpencryption = tls
+    smtpuser = your@gmail.com
+For Gmail, use an App Password (not your real password):
+
+Google Account → Security → 2FA → App Passwords
+
+
+Step 10: 📬 Send the Patch
+bashgit send-email \
+  --to="gregkh@linuxfoundation.org" \
+  --cc="devel@linuxdriverproject.org" \
+  0001-staging-rtl8188eu-*.patch
+
+Step 11: 📬 Monitor Your Patch
+Track it here:
+
+https://patchwork.kernel.org — search your name/email
+You'll get review replies on the mailing list
+
+
+Step 12: 🔁 Handle Review Comments (if any)
+bash# Amend your commit
+git commit --amend
+
+# Regenerate as v2
+git format-patch -1 HEAD --subject-prefix="PATCH v2"
+
+# Resend
+git send-email --to=... 0001-*.patch
+In the v2 cover, mention what changed:
+v2: addressed review comments from <Reviewer Name>
+    - fixed xyz
+
+🗺️ Full Flow Summary
+Clone staging tree
+      ↓
+Find issue with checkpatch
+      ↓
+Create branch → Fix → Verify compile
+      ↓
+git commit -s (with proper message)
+      ↓
+git format-patch → get_maintainer.pl
+      ↓
+git send-email
+      ↓
+Wait → Respond to reviews → resend v2
+      ↓
+Patch merged into Greg's tree → Linus pulls it → Mainline! 🎉
