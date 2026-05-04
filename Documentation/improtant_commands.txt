@@ -1,3 +1,8 @@
+
+Go to the Beagle Board GitHub repository located at 
+https://github.com/beagleboard/linux. 
+Switch to the branch 5.10.168-ti-rt-r76.
+
 STEP 1:
 /*
  *removes all the temporary folder, object files, images generated during the previous build. 
